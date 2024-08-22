@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -7,7 +6,7 @@ pipeline {
             steps {
                 echo 'Building...'
                 // Example: Use Maven to build
-                sh 'mvn clean install'
+                bat 'mvn clean install'
             }
         }
 
@@ -15,7 +14,7 @@ pipeline {
             steps {
                 echo 'Running Unit and Integration Tests...'
                 // Example: Use JUnit for testing
-                sh 'mvn test'
+                bat 'mvn test'
             }
         }
 
@@ -23,7 +22,7 @@ pipeline {
             steps {
                 echo 'Analyzing Code...'
                 // Example: Use SonarQube for code analysis
-                sh 'sonar-scanner'
+                bat 'sonar-scanner'
             }
         }
 
@@ -31,7 +30,7 @@ pipeline {
             steps {
                 echo 'Performing Security Scan...'
                 // Example: Use OWASP Dependency Check
-                sh 'dependency-check --scan .'
+                bat 'dependency-check --scan .'
             }
         }
 
@@ -39,7 +38,7 @@ pipeline {
             steps {
                 echo 'Deploying to Staging...'
                 // Example: Deploy to AWS EC2 instance
-                sh 'scp target/my-app.war ec2-user@staging-server:/path/to/deploy'
+                bat 'scp target/my-app.war ec2-user@staging-server:/path/to/deploy'
             }
         }
 
@@ -47,7 +46,7 @@ pipeline {
             steps {
                 echo 'Running Integration Tests on Staging...'
                 // Example: Run integration tests on staging
-                sh './run-integration-tests.sh'
+                bat './run-integration-tests.sh'
             }
         }
 
@@ -55,7 +54,7 @@ pipeline {
             steps {
                 echo 'Deploying to Production...'
                 // Example: Deploy to AWS EC2 instance
-                sh 'scp target/my-app.war ec2-user@production-server:/path/to/deploy'
+                bat 'scp target/my-app.war ec2-user@production-server:/path/to/deploy'
             }
         }
     }
