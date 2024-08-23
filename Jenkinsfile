@@ -30,6 +30,18 @@ pipeline {
                 // Simulate unit and integration testing
                 echo 'Simulating: mvn test'
             }
+            post {
+                success {
+                    mail to: 'wowjaa1025@gmail.com',
+                        subject: "Pipeline - Unit and Integration Tests SUCCESS: ${currentBuild.fullDisplayName}",
+                        body: "The unit and integration tests completed successfully. Check the console output at ${env.BUILD_URL} for details."
+                }
+                failure {
+                    mail to: 'wowjaa1025@gmail.com',
+                        subject: "Pipeline - Unit and Integration Tests FAILURE: ${currentBuild.fullDisplayName}",
+                        body: "The unit and integration tests failed. Check the console output at ${env.BUILD_URL} for details."
+                }
+            }
         }
 
         stage('Code Analysis') {
@@ -45,6 +57,18 @@ pipeline {
                 echo 'Performing security scan...'
                 // Simulate security scan using OWASP Dependency Check or similar tool
                 echo 'Simulating: security scan with OWASP Dependency Check'
+            }
+            post {
+                success {
+                    mail to: 'wowjaa1025@gmail.com',
+                        subject: "Pipeline - Security Scan SUCCESS: ${currentBuild.fullDisplayName}",
+                        body: "The security scan completed successfully. Check the console output at ${env.BUILD_URL} for details."
+                }
+                failure {
+                    mail to: 'wowjaa1025@gmail.com',
+                        subject: "Pipeline - Security Scan FAILURE: ${currentBuild.fullDisplayName}",
+                        body: "The security scan failed. Check the console output at ${env.BUILD_URL} for details."
+                }
             }
         }
 
@@ -75,7 +99,7 @@ pipeline {
 
     post {
         always {
-            echo 'Sending email notifications...'
+            echo 'Sending final email notification...'
             mail to: 'wowjaa1025@gmail.com',
                 subject: "Pipeline finished: ${currentBuild.fullDisplayName}",
                 body: "Check console output at ${env.BUILD_URL}"
