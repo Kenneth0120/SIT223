@@ -26,7 +26,7 @@ pipeline {
                 // Simulate the build process
                 echo 'Simulating: mvn clean install'
 
-                // Log the build status
+                // Write log for build stage
                 writeFile file: "${env.LOG_FILE}", text: "Build completed successfully\n"
             }
         }
@@ -38,7 +38,10 @@ pipeline {
                 echo 'Simulating: mvn test'
 
                 // Append the test results to the log
-                writeFile file: "${env.LOG_FILE}", text: "Unit and Integration Tests completed successfully\n", append: true
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Unit and Integration Tests completed successfully\n"
+                }
             }
         }
 
@@ -49,7 +52,10 @@ pipeline {
                 echo 'Simulating: sonar-scanner analysis'
 
                 // Append the code analysis results to the log
-                writeFile file: "${env.LOG_FILE}", text: "Code Analysis completed successfully\n", append: true
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Code Analysis completed successfully\n"
+                }
             }
         }
 
@@ -60,7 +66,10 @@ pipeline {
                 echo 'Simulating: security scan with OWASP Dependency Check'
 
                 // Append the security scan results to the log
-                writeFile file: "${env.LOG_FILE}", text: "Security Scan completed successfully\n", append: true
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Security Scan completed successfully\n"
+                }
             }
         }
 
@@ -71,7 +80,10 @@ pipeline {
                 echo 'Simulating: deployment to AWS EC2 (staging)'
 
                 // Append the deployment results to the log
-                writeFile file: "${env.LOG_FILE}", text: "Deploy to Staging completed successfully\n", append: true
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Deploy to Staging completed successfully\n"
+                }
             }
         }
 
@@ -82,7 +94,10 @@ pipeline {
                 echo 'Simulating: integration tests on staging server'
 
                 // Append the integration test results to the log
-                writeFile file: "${env.LOG_FILE}", text: "Integration Tests on Staging completed successfully\n", append: true
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Integration Tests on Staging completed successfully\n"
+                }
             }
         }
 
@@ -93,7 +108,10 @@ pipeline {
                 echo 'Simulating: deployment to AWS EC2 (production)'
 
                 // Append the production deployment results to the log
-                writeFile file: "${env.LOG_FILE}", text: "Deploy to Production completed successfully\n", append: true
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Deploy to Production completed successfully\n"
+                }
             }
         }
     }
