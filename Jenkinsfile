@@ -1,82 +1,84 @@
 pipeline {
-    agent any 
-
-    environment {
-        DIRECTORY_PATH = '/Users/pauleccarius/Library/CloudStorage/OneDrive-DeakinUniversity/SIT223 Professional Practice in Information Technology/5.1P/' 
-        TESTING_ENVIRONMENT = 'Test_Environment' 
-        PRODUCTION_ENVIRONMENT = 'Paul_Eccarius'
-    }
+    agent any
 
     tools {
-        maven 'Maven 3.9.9' // Ensure this matches your Maven tool installation name
+        maven 'Maven 3.9.9' // Ensure this matches your Maven installation
+    }
+
+    environment {
+        STAGING_SERVER = 'ec2-user@staging-server:/path/to/deploy'
+        PRODUCTION_SERVER = 'ec2-user@production-server:/path/to/deploy'
     }
 
     stages {
-        stage('0 Delay') {
+        stage('Build') {
             steps {
-                sleep 5
-            }
-        }
-        
-        stage('1 Build') {
-            steps {
-                echo "fetch the source code from the directory path specified by the environment variable"
-                checkout scm
-                echo "compile the code and generate any necessary artifacts"
-                bat 'mvn clean compile' // Use bat instead of sh for Windows
+                echo 'Building...'
+                // Build the code using Maven
+                bat 'mvn clean install'
             }
         }
 
-        stage('2 Test') {
+        stage('Unit and Integration Tests') {
             steps {
-                echo "Running unit tests and integration tests"
-                bat 'mvn test' // Use bat instead of sh
-                junit '**/target/surefire-reports/*.xml'
+                echo 'Running Unit and Integration Tests...'
+                // Run unit and integration tests using Maven
+                bat 'mvn test'
             }
         }
 
-        stage('3 Code Quality Check') {
+        stage('Code Analysis') {
             steps {
-                echo "Checking the quality of the code"
-                bat 'pmd.bat -d src -R rulesets/java/basic.xml -f xml > pmd_report.xml' // Adjust for PMD on Windows
-                pmd canRunOnFailed: true, healthReportAmplificationFactor: 1.0, pattern: 'pmd_report.xml'
+                echo 'Analyzing Code...'
+                // Run code analysis using SonarQube
+                bat 'sonar-scanner'
             }
         }
 
-        stage('4 Security Scan') {
+        stage('Security Scan') {
             steps {
-                echo "Performing security scan"
-                bat 'dependency-check.bat --project "hello-world" --scan ./ --out ./ --format XML' // Adjust for Dependency Check on Windows
-                dependencyCheckPublisher canRunOnFailed: true, pattern: 'dependency-check-report.xml'
+                echo 'Performing Security Scan...'
+                // Perform security scan using OWASP Dependency Check
+                bat 'dependency-check.bat --scan ./ --format XML --project MyProject'
             }
         }
 
-        stage('5 Deploy') {
+        stage('Deploy to Staging') {
             steps {
-                echo "Deploying the application to a testing environment"
-                // Add deployment commands specific to your setup here (e.g., SCP, SSH, etc.)
+                echo 'Deploying to Staging...'
+                // Deploy to a staging server (adjust the path if necessary)
+                bat 'scp target/my-app.war ${STAGING_SERVER}'
             }
         }
 
-        stage('6 Integration Test') {
+        stage('Integration Tests on Staging') {
             steps {
-                echo "Running integration tests on the staging environment"
-                bat 'mvn integration-test' // Use bat instead of sh
+                echo 'Running Integration Tests on Staging...'
+                // Run integration tests on the staging server
+                bat './run-integration-tests.sh'
             }
         }
 
-        stage('7 Deploy to Production') {
+        stage('Deploy to Production') {
             steps {
-                echo "Deploying to production environment: ${env.PRODUCTION_ENVIRONMENT}"
-                // Add production deployment commands here
+                echo 'Deploying to Production...'
+                // Deploy to production server (adjust the path if necessary)
+                bat 'scp target/my-app.war ${PRODUCTION_SERVER}'
             }
         }
     }
 
     post {
         always {
+            echo 'Sending email notifications...'
+            // Send email notification at the end of the pipeline
             mail to: 'developer@example.com',
                 subject: "Pipeline finished: ${currentBuild.fullDisplayName}",
+                body: "Check console output at ${env.BUILD_URL}"
+        }
+        failure {
+            mail to: 'developer@example.com',
+                subject: "Pipeline failed: ${currentBuild.fullDisplayName}",
                 body: "Check console output at ${env.BUILD_URL}"
         }
     }
