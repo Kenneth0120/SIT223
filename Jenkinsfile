@@ -76,7 +76,7 @@ pipeline {
     post {
         always {
             echo 'Sending email notifications...'
-            mail to: 'developer@example.com',
+            mail to: 's222575621@deakin.edu.au',
                 subject: "Pipeline finished: ${currentBuild.fullDisplayName}",
                 body: "Check console output at ${env.BUILD_URL}"
         }
