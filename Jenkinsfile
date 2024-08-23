@@ -102,11 +102,14 @@ pipeline {
             archiveArtifacts artifacts: "${env.LOG_FILE}", allowEmptyArchive: true
 
             echo 'Sending final email with logs...'
-            mail to: 'wowjaa1025@gmail.com',
-                subject: "Pipeline Status: ${currentBuild.currentResult}",
-                body: """Pipeline finished with status: ${currentBuild.currentResult}.
-                Please find the attached logs for the pipeline.""",
-                attachLog: true
+            script {
+                def logContent = readFile(file: "${env.LOG_FILE}")
+                mail to: 'wowjaa1025@gmail.com',
+                    subject: "Pipeline Status: ${currentBuild.currentResult}",
+                    body: """Pipeline finished with status: ${currentBuild.currentResult}.
+                    Please find the logs attached.""",
+                    attachmentsPattern: "${env.LOG_FILE}"
+            }
         }
     }
 }
