@@ -120,10 +120,9 @@ pipeline {
             echo 'Sending final email with logs...'
             script {
                 def logContent = readFile(file: "${env.LOG_FILE}")
-                mail to: 'wowjaa1025@gmail.com',
+                mail to: 's222575621@deakin.edu.au',
                     subject: "Pipeline Status: ${currentBuild.currentResult}",
-                    body: """Pipeline finished with status: ${currentBuild.currentResult}.
-                    Please find the logs attached.""",
+                    body: "Pipeline finished with status: ${currentBuild.currentResult}. Please find the logs attached.",
                     attachmentsPattern: "${env.LOG_FILE}"
             }
         }
