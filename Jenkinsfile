@@ -6,15 +6,31 @@ pipeline {
     }
 
     stages {
+        stage('Initialize Log') {
+            steps {
+                script {
+                    writeFile file: "${env.LOG_FILE}", text: "Pipeline Execution Log:\n"
+                }
+            }
+        }
+
         stage('Checkout SCM') {
             steps {
                 echo 'Fetching source code from GitHub...'
+                script {
+                    def logContent = readFile(file: "${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: logContent + "Checkout SCM completed successfully\n"
+                }
             }
         }
 
         stage('Tool Install') {
             steps {
                 echo 'Installing necessary build tools...'
+                script {
+                    def logContent = readFile(file: "${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: logContent + "Tool installation completed successfully\n"
+                }
             }
         }
 
@@ -23,7 +39,7 @@ pipeline {
                 echo 'Building the code...'
                 echo 'Simulating: mvn clean install'
                 script {
-                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    def logContent = readFile(file: "${env.LOG_FILE}")
                     writeFile file: "${env.LOG_FILE}", text: logContent + "Build stage completed successfully\n"
                 }
             }
@@ -34,7 +50,7 @@ pipeline {
                 echo 'Running unit and integration tests...'
                 echo 'Simulating: mvn test'
                 script {
-                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    def logContent = readFile(file: "${env.LOG_FILE}")
                     writeFile file: "${env.LOG_FILE}", text: logContent + "Unit and Integration Tests completed successfully\n"
                 }
             }
@@ -45,7 +61,7 @@ pipeline {
                 echo 'Analyzing code quality...'
                 echo 'Simulating: sonar-scanner analysis'
                 script {
-                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    def logContent = readFile(file: "${env.LOG_FILE}")
                     writeFile file: "${env.LOG_FILE}", text: logContent + "Code Analysis completed successfully\n"
                 }
             }
@@ -56,7 +72,7 @@ pipeline {
                 echo 'Performing security scan...'
                 echo 'Simulating: security scan with OWASP Dependency Check'
                 script {
-                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    def logContent = readFile(file: "${env.LOG_FILE}")
                     writeFile file: "${env.LOG_FILE}", text: logContent + "Security Scan completed successfully\n"
                 }
             }
@@ -67,7 +83,7 @@ pipeline {
                 echo 'Deploying to staging environment...'
                 echo 'Simulating: deployment to AWS EC2 (staging)'
                 script {
-                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    def logContent = readFile(file: "${env.LOG_FILE}")
                     writeFile file: "${env.LOG_FILE}", text: logContent + "Deploy to Staging completed successfully\n"
                 }
             }
@@ -78,7 +94,7 @@ pipeline {
                 echo 'Running integration tests on the staging environment...'
                 echo 'Simulating: integration tests on staging server'
                 script {
-                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    def logContent = readFile(file: "${env.LOG_FILE}")
                     writeFile file: "${env.LOG_FILE}", text: logContent + "Integration Tests on Staging completed successfully\n"
                 }
             }
@@ -89,7 +105,7 @@ pipeline {
                 echo 'Deploying to production environment...'
                 echo 'Simulating: deployment to AWS EC2 (production)'
                 script {
-                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    def logContent = readFile(file: "${env.LOG_FILE}")
                     writeFile file: "${env.LOG_FILE}", text: logContent + "Deploy to Production completed successfully\n"
                 }
             }
