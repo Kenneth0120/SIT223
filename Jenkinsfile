@@ -1,79 +1,74 @@
 pipeline {
     agent any
 
+    environment {
+        LOG_FILE = 'pipeline-log.txt' // Define the log file to be used
+    }
+
     stages {
         stage('Checkout SCM') {
             steps {
                 echo 'Fetching source code from GitHub...'
-                // Normally, you'd use: checkout scm
+
             }
         }
 
         stage('Tool Install') {
             steps {
                 echo 'Installing necessary build tools...'
-                // This is where Maven or other tools would be installed if needed
+
             }
         }
 
         stage('Build') {
             steps {
-                echo "Running Maven..."
-                echo "Building Code..."
-                sleep 15
-                echo "Maven build completed successfully."
+                echo 'Building the code...'
+                // Simulate the build process
+                echo 'Simulating: mvn clean install'
+
+                // Write log for build stage
+                writeFile file: "${env.LOG_FILE}", text: "Build completed successfully\n"
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running unit and integration tests...'
-                sleep 5
+                // Simulate unit and integration testing
                 echo 'Simulating: mvn test'
-            }
-            post {
-                success {
-                    emailext to: 'wowjaa1025@gmail.com',
-                        subject: "Pipeline - Unit and Integration Tests SUCCESS: ${currentBuild.fullDisplayName}",
-                        body: "The unit and integration tests completed successfully. Please find the logs attached.",
-                        attachLog: true, compressLog: true
-                }
-                failure {
-                    emailext to: 'wowjaa1025@gmail.com',
-                        subject: "Pipeline - Unit and Integration Tests FAILURE: ${currentBuild.fullDisplayName}",
-                        body: "The unit and integration tests failed. Please find the logs attached.",
-                        attachLog: true, compressLog: true
+
+                // Append the test results to the log
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Unit and Integration Tests completed successfully\n"
                 }
             }
         }
 
         stage('Code Analysis') {
             steps {
-                echo 'SonarQube initialisation...'
                 echo 'Analyzing code quality...'
-                sleep 10
-                echo 'SonarQube: Code analysis complete with no bugs.'
+                // Simulate code analysis (e.g., with SonarQube)
+                echo 'Simulating: sonar-scanner analysis'
+
+                // Append the code analysis results to the log
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Code Analysis completed successfully\n"
+                }
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo 'Performing security scan with OWASP Dependency Check...'
-                sleep 25
-                echo 'OWASP: Codebase and dependencies have no active vulnerabilities.'
-            }
-            post {
-                success {
-                    emailext to: 'wowjaa1025@gmail.com',
-                        subject: "Pipeline - Security Scan SUCCESS: ${currentBuild.fullDisplayName}",
-                        body: "The security scan completed successfully. Please find the logs attached.",
-                        attachLog: true, compressLog: true
-                }
-                failure {
-                    emailext to: 'wowjaa1025@gmail.com',
-                        subject: "Pipeline - Security Scan FAILURE: ${currentBuild.fullDisplayName}",
-                        body: "The security scan failed. Please find the logs attached.",
-                        attachLog: true, compressLog: true
+                echo 'Performing security scan...'
+                // Simulate security scan using OWASP Dependency Check or similar tool
+                echo 'Simulating: security scan with OWASP Dependency Check'
+
+                // Append the security scan results to the log
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Security Scan completed successfully\n"
                 }
             }
         }
@@ -81,48 +76,60 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to staging environment...'
-                sleep 10
+                // Simulate deployment to staging server
                 echo 'Simulating: deployment to AWS EC2 (staging)'
+
+                // Append the deployment results to the log
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Deploy to Staging completed successfully\n"
+                }
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running integration tests on the staging environment...'
-                sleep 7
+                // Simulate integration testing on staging
                 echo 'Simulating: integration tests on staging server'
-            }
-            post {
-                success {
-                    emailext to: 'wowjaa1025@gmail.com',
-                        subject: "Pipeline - Integration Tests on Staging SUCCESS: ${currentBuild.fullDisplayName}",
-                        body: "Integration tests on staging completed successfully. Please find the logs attached.",
-                        attachLog: true, compressLog: true
-                }
-                failure {
-                    emailext to: 'wowjaa1025@gmail.com',
-                        subject: "Pipeline - Integration Tests on Staging FAILURE: ${currentBuild.fullDisplayName}",
-                        body: "Integration tests on staging failed. Please find the logs attached.",
-                        attachLog: true, compressLog: true
+
+                // Append the integration test results to the log
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Integration Tests on Staging completed successfully\n"
                 }
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to production environment using Kubernetes...'
-                sleep 20
-                echo 'Production deployment completed successfully.'
+                echo 'Deploying to production environment...'
+                // Simulate production deployment
+                echo 'Simulating: deployment to AWS EC2 (production)'
+
+                // Append the production deployment results to the log
+                script {
+                    def currentLog = readFile("${env.LOG_FILE}")
+                    writeFile file: "${env.LOG_FILE}", text: "${currentLog}Deploy to Production completed successfully\n"
+                }
             }
         }
     }
 
     post {
         always {
-            echo 'Sending final email notification...'
-            emailext to: 'wowjaa1025@gmail.com',
-                subject: "Pipeline finished: ${currentBuild.fullDisplayName}",
-                body: "Check console output at ${env.BUILD_URL}"
+            echo 'Archiving logs...'
+            archiveArtifacts artifacts: "${env.LOG_FILE}", allowEmptyArchive: true
+
+            echo 'Sending final email with logs...'
+            script {
+                def logContent = readFile(file: "${env.LOG_FILE}")
+                mail to: 'wowjaa1025@gmail.com',
+                    subject: "Pipeline Status: ${currentBuild.currentResult}",
+                    body: """Pipeline finished with status: ${currentBuild.currentResult}.
+                    Please find the logs attached.""",
+                    attachmentsPattern: "${env.LOG_FILE}" // Attach the log file
+            }
         }
     }
 }
