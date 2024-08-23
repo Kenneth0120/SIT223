@@ -78,8 +78,7 @@ pipeline {
             echo 'Sending email notifications...'
             mail to: 'developer@example.com',
                 subject: "Pipeline finished: ${currentBuild.fullDisplayName}",
-                body: "Check console output at ${env.BUILD_URL}",
-                attachLog: true
+                body: "Check console output at ${env.BUILD_URL}"
         }
     }
 }
