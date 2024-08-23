@@ -22,7 +22,10 @@ pipeline {
             steps {
                 echo 'Building the code...'
                 echo 'Simulating: mvn clean install'
-                writeFile file: "${env.LOG_FILE}", text: "Build stage completed successfully\n", append: true
+                script {
+                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    writeFile file: "${env.LOG_FILE}", text: logContent + "Build stage completed successfully\n"
+                }
             }
         }
 
@@ -30,7 +33,10 @@ pipeline {
             steps {
                 echo 'Running unit and integration tests...'
                 echo 'Simulating: mvn test'
-                writeFile file: "${env.LOG_FILE}", text: "Unit and Integration Tests completed successfully\n", append: true
+                script {
+                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    writeFile file: "${env.LOG_FILE}", text: logContent + "Unit and Integration Tests completed successfully\n"
+                }
             }
         }
 
@@ -38,7 +44,10 @@ pipeline {
             steps {
                 echo 'Analyzing code quality...'
                 echo 'Simulating: sonar-scanner analysis'
-                writeFile file: "${env.LOG_FILE}", text: "Code Analysis completed successfully\n", append: true
+                script {
+                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    writeFile file: "${env.LOG_FILE}", text: logContent + "Code Analysis completed successfully\n"
+                }
             }
         }
 
@@ -46,7 +55,10 @@ pipeline {
             steps {
                 echo 'Performing security scan...'
                 echo 'Simulating: security scan with OWASP Dependency Check'
-                writeFile file: "${env.LOG_FILE}", text: "Security Scan completed successfully\n", append: true
+                script {
+                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    writeFile file: "${env.LOG_FILE}", text: logContent + "Security Scan completed successfully\n"
+                }
             }
         }
 
@@ -54,7 +66,10 @@ pipeline {
             steps {
                 echo 'Deploying to staging environment...'
                 echo 'Simulating: deployment to AWS EC2 (staging)'
-                writeFile file: "${env.LOG_FILE}", text: "Deploy to Staging completed successfully\n", append: true
+                script {
+                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    writeFile file: "${env.LOG_FILE}", text: logContent + "Deploy to Staging completed successfully\n"
+                }
             }
         }
 
@@ -62,7 +77,10 @@ pipeline {
             steps {
                 echo 'Running integration tests on the staging environment...'
                 echo 'Simulating: integration tests on staging server'
-                writeFile file: "${env.LOG_FILE}", text: "Integration Tests on Staging completed successfully\n", append: true
+                script {
+                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    writeFile file: "${env.LOG_FILE}", text: logContent + "Integration Tests on Staging completed successfully\n"
+                }
             }
         }
 
@@ -70,7 +88,10 @@ pipeline {
             steps {
                 echo 'Deploying to production environment...'
                 echo 'Simulating: deployment to AWS EC2 (production)'
-                writeFile file: "${env.LOG_FILE}", text: "Deploy to Production completed successfully\n", append: true
+                script {
+                    def logContent = readFile(file: "${env.LOG_FILE}") // Read existing content
+                    writeFile file: "${env.LOG_FILE}", text: logContent + "Deploy to Production completed successfully\n"
+                }
             }
         }
     }
@@ -85,7 +106,7 @@ pipeline {
                 subject: "Pipeline Status: ${currentBuild.currentResult}",
                 body: """Pipeline finished with status: ${currentBuild.currentResult}.
                 Please find the attached logs for the pipeline.""",
-                attachmentsPattern: "${env.LOG_FILE}"
+                attachLog: true
         }
     }
 }
