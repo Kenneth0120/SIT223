@@ -1,69 +1,74 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven 3.9.9' // Ensure this matches your Maven installation
-    }
-
-    environment {
-        STAGING_SERVER = 'ec2-user@staging-server:/path/to/deploy'
-        PRODUCTION_SERVER = 'ec2-user@production-server:/path/to/deploy'
-    }
-
     stages {
+        stage('Checkout SCM') {
+            steps {
+                echo 'Fetching source code from GitHub...'
+                // Normally, you'd use: checkout scm
+            }
+        }
+
+        stage('Tool Install') {
+            steps {
+                echo 'Installing necessary build tools...'
+                // This is where Maven or other tools would be installed if needed
+            }
+        }
+
         stage('Build') {
             steps {
-                echo 'Building...'
-                // Build the code using Maven
-                bat 'mvn clean install'
+                echo 'Building the code...'
+                // Simulate the build process
+                echo 'Simulating: mvn clean install'
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running Unit and Integration Tests...'
-                // Run unit and integration tests using Maven
-                bat 'mvn test'
+                echo 'Running unit and integration tests...'
+                // Simulate unit and integration testing
+                echo 'Simulating: mvn test'
             }
         }
 
         stage('Code Analysis') {
             steps {
-                echo 'Analyzing Code...'
-                // Run code analysis using SonarQube
-                bat 'sonar-scanner'
+                echo 'Analyzing code quality...'
+                // Simulate code analysis (e.g., with SonarQube)
+                echo 'Simulating: sonar-scanner analysis'
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo 'Performing Security Scan...'
-                // Perform security scan using OWASP Dependency Check
-                bat 'dependency-check.bat --scan ./ --format XML --project MyProject'
+                echo 'Performing security scan...'
+                // Simulate security scan using OWASP Dependency Check or similar tool
+                echo 'Simulating: security scan with OWASP Dependency Check'
             }
         }
 
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to Staging...'
-                // Deploy to a staging server (adjust the path if necessary)
-                bat 'scp target/my-app.war ${STAGING_SERVER}'
+                echo 'Deploying to staging environment...'
+                // Simulate deployment to staging server
+                echo 'Simulating: deployment to AWS EC2 (staging)'
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running Integration Tests on Staging...'
-                // Run integration tests on the staging server
-                bat './run-integration-tests.sh'
+                echo 'Running integration tests on the staging environment...'
+                // Simulate integration testing on staging
+                echo 'Simulating: integration tests on staging server'
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to Production...'
-                // Deploy to production server (adjust the path if necessary)
-                bat 'scp target/my-app.war ${PRODUCTION_SERVER}'
+                echo 'Deploying to production environment...'
+                // Simulate production deployment
+                echo 'Simulating: deployment to AWS EC2 (production)'
             }
         }
     }
@@ -71,15 +76,10 @@ pipeline {
     post {
         always {
             echo 'Sending email notifications...'
-            // Send email notification at the end of the pipeline
             mail to: 'developer@example.com',
                 subject: "Pipeline finished: ${currentBuild.fullDisplayName}",
-                body: "Check console output at ${env.BUILD_URL}"
-        }
-        failure {
-            mail to: 'developer@example.com',
-                subject: "Pipeline failed: ${currentBuild.fullDisplayName}",
-                body: "Check console output at ${env.BUILD_URL}"
+                body: "Check console output at ${env.BUILD_URL}",
+                attachLog: true
         }
     }
 }
