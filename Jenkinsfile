@@ -2,112 +2,98 @@ pipeline {
     agent any
 
     environment {
-        LOG_FILE = "pipeline-log.txt"
+        LOG_FILE = 'pipeline-log.txt' // Define the log file to be used
     }
 
     stages {
-        stage('Initialize Log') {
-            steps {
-                script {
-                    writeFile file: "${env.LOG_FILE}", text: "Pipeline Execution Log:\n"
-                }
-            }
-        }
-
         stage('Checkout SCM') {
             steps {
                 echo 'Fetching source code from GitHub...'
-                script {
-                    def logContent = readFile(file: "${env.LOG_FILE}")
-                    writeFile file: "${env.LOG_FILE}", text: logContent + "Checkout SCM completed successfully\n"
-                }
+                // Normally, you'd use: checkout scm
             }
         }
 
         stage('Tool Install') {
             steps {
                 echo 'Installing necessary build tools...'
-                script {
-                    def logContent = readFile(file: "${env.LOG_FILE}")
-                    writeFile file: "${env.LOG_FILE}", text: logContent + "Tool installation completed successfully\n"
-                }
+                // This is where Maven or other tools would be installed if needed
             }
         }
 
         stage('Build') {
             steps {
                 echo 'Building the code...'
+                // Simulate the build process
                 echo 'Simulating: mvn clean install'
-                script {
-                    def logContent = readFile(file: "${env.LOG_FILE}")
-                    writeFile file: "${env.LOG_FILE}", text: logContent + "Build stage completed successfully\n"
-                }
+
+                // Log the build status
+                writeFile file: "${env.LOG_FILE}", text: "Build completed successfully\n"
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running unit and integration tests...'
+                // Simulate unit and integration testing
                 echo 'Simulating: mvn test'
-                script {
-                    def logContent = readFile(file: "${env.LOG_FILE}")
-                    writeFile file: "${env.LOG_FILE}", text: logContent + "Unit and Integration Tests completed successfully\n"
-                }
+
+                // Append the test results to the log
+                writeFile file: "${env.LOG_FILE}", text: "Unit and Integration Tests completed successfully\n", append: true
             }
         }
 
         stage('Code Analysis') {
             steps {
                 echo 'Analyzing code quality...'
+                // Simulate code analysis (e.g., with SonarQube)
                 echo 'Simulating: sonar-scanner analysis'
-                script {
-                    def logContent = readFile(file: "${env.LOG_FILE}")
-                    writeFile file: "${env.LOG_FILE}", text: logContent + "Code Analysis completed successfully\n"
-                }
+
+                // Append the code analysis results to the log
+                writeFile file: "${env.LOG_FILE}", text: "Code Analysis completed successfully\n", append: true
             }
         }
 
         stage('Security Scan') {
             steps {
                 echo 'Performing security scan...'
+                // Simulate security scan using OWASP Dependency Check or similar tool
                 echo 'Simulating: security scan with OWASP Dependency Check'
-                script {
-                    def logContent = readFile(file: "${env.LOG_FILE}")
-                    writeFile file: "${env.LOG_FILE}", text: logContent + "Security Scan completed successfully\n"
-                }
+
+                // Append the security scan results to the log
+                writeFile file: "${env.LOG_FILE}", text: "Security Scan completed successfully\n", append: true
             }
         }
 
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to staging environment...'
+                // Simulate deployment to staging server
                 echo 'Simulating: deployment to AWS EC2 (staging)'
-                script {
-                    def logContent = readFile(file: "${env.LOG_FILE}")
-                    writeFile file: "${env.LOG_FILE}", text: logContent + "Deploy to Staging completed successfully\n"
-                }
+
+                // Append the deployment results to the log
+                writeFile file: "${env.LOG_FILE}", text: "Deploy to Staging completed successfully\n", append: true
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running integration tests on the staging environment...'
+                // Simulate integration testing on staging
                 echo 'Simulating: integration tests on staging server'
-                script {
-                    def logContent = readFile(file: "${env.LOG_FILE}")
-                    writeFile file: "${env.LOG_FILE}", text: logContent + "Integration Tests on Staging completed successfully\n"
-                }
+
+                // Append the integration test results to the log
+                writeFile file: "${env.LOG_FILE}", text: "Integration Tests on Staging completed successfully\n", append: true
             }
         }
 
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to production environment...'
+                // Simulate production deployment
                 echo 'Simulating: deployment to AWS EC2 (production)'
-                script {
-                    def logContent = readFile(file: "${env.LOG_FILE}")
-                    writeFile file: "${env.LOG_FILE}", text: logContent + "Deploy to Production completed successfully\n"
-                }
+
+                // Append the production deployment results to the log
+                writeFile file: "${env.LOG_FILE}", text: "Deploy to Production completed successfully\n", append: true
             }
         }
     }
@@ -120,10 +106,11 @@ pipeline {
             echo 'Sending final email with logs...'
             script {
                 def logContent = readFile(file: "${env.LOG_FILE}")
-                mail to: 's222575621@deakin.edu.au',
+                mail to: 'wowjaa1025@gmail.com',
                     subject: "Pipeline Status: ${currentBuild.currentResult}",
-                    body: "Pipeline finished with status: ${currentBuild.currentResult}. Please find the logs attached.",
-                    attachmentsPattern: "${env.LOG_FILE}"
+                    body: """Pipeline finished with status: ${currentBuild.currentResult}.
+                    Please find the logs attached.""",
+                    attachmentsPattern: "${env.LOG_FILE}" // Attach the log file
             }
         }
     }
