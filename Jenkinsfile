@@ -5,14 +5,12 @@ pipeline {
         stage('Checkout SCM') {
             steps {
                 echo 'Fetching source code from GitHub...'
-                // Normally, you'd use: checkout scm
             }
         }
 
         stage('Tool Install') {
             steps {
                 echo 'Installing necessary build tools...'
-                // This is where Maven or other tools would be installed if needed
             }
         }
 
